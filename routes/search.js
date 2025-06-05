@@ -41,13 +41,13 @@ router.get('/autocomplete', async (req, res) => {
   }
 });
 
-// ✅ 스크랩 기반 추천 API (직접 통신 방식)
+// 스크랩 기반 추천 API (직접 통신 방식)
 router.get('/recommend/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
     // 1. scrap-service에서 스크랩한 postId 목록 가져오기
-    const scrapResponse = await axios.get(`http://localhost:3003/scrap/${userId}`);
+    const scrapResponse = await axios.get(`http://community-service:8081/api/saves/${userId}`);
     const scrapedPostIds = scrapResponse.data.map(post => post.postId);
 
     if (!scrapedPostIds || scrapedPostIds.length === 0) {
@@ -70,25 +70,70 @@ router.get('/recommend/:userId', async (req, res) => {
 
     res.json(result.hits.hits);
   } catch (error) {
-    console.error('❌ Recommend error:', error);
+    console.error(' Recommend error:', error);
     res.status(500).json({ error: 'Recommendation failed' });
   }
 });
 
-// 🔍 전체 문서 조회 (디버깅용)
-router.get('/all', async (req, res) => {
+
+// 게시글 인덱싱 (등록/업데이트)
+router.post('/index', async (req, res) => {
+  const { postId, title, content } = req.body;
+
+  if (!postId || !title || !content) {
+    return res.status(400).json({ error: 'postId, title, content가 모두 필요합니다.' });
+  }
+
   try {
-    const result = await client.search({
+    const result = await client.index({
       index: 'posts',
-      query: { match_all: {} },
-      size: 100
+      id: postId, // 고유 ID로 설정 (수정 가능하게 하기 위해)
+      document: { title, content }
     });
-    res.json(result.hits.hits);
+
+    res.status(201).json({ message: ' 게시글 인덱싱 완료', result });
   } catch (error) {
-    console.error('❌ 전체 문서 조회 오류:', error.meta?.body || error);
-    res.status(500).json({ error: '전체 조회 실패' });
+    console.error('Indexing error:', error.message);
+    res.status(500).json({ error: 'Indexing failed' });
   }
 });
 
-module.exports = router;
+// 게시글 수정
+router.put('/index/:postId', async (req, res) => {
+  const { postId } = req.params;
+  const { title, content } = req.body;
 
+  if (!title || !content) {
+    return res.status(400).json({ error: 'title과 content가 필요합니다.' });
+  }
+
+  try {
+    const result = await client.update({
+      index: 'posts',
+      id: postId,
+      doc: { title, content }
+    });
+
+    res.json({ message: '게시글 수정 완료', result });
+  } catch (error) {
+    console.error(' Update error:', error.message);
+    res.status(500).json({ error: 'Update failed' });
+  }
+});
+
+// 게시글 삭제
+router.delete('/index/:postId', async (req, res) => {
+  const { postId } = req.params;
+
+  try {
+    const result = await client.delete({
+      index: 'posts',
+      id: postId
+    });
+
+    res.json({ message: '게시글 삭제 완료', result });
+  } catch (error) {
+    console.error('Delete error:', error.meta?.body?.result || error.message);
+    res.status(500).json({ error: 'Delete failed' });
+  }
+});
