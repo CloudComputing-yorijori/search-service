@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to YORIJORI!</title>
+    <link rel="stylesheet" href="/css/styles.css">    
+    <link rel="stylesheet" href="/css/layout.css">
+    <script src="https://kit.fontawesome.com/9dd3bbb56c.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <div id="logo"><a href="/">요리조리</a></div>
+        <!-- 레시피 및 재료 검색 -->
+        <div id="searchBar">
+            <form class="searchBar" action="/search" method="get" autocomplete="off">
+                <input id="searchInput" class="search-txt" type="text" name="material" placeholder="레시피, 재료 검색" value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+                <button class="search-btn" type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+            <ul id="suggestions" class="suggestions-list"></ul>  <!-- 자동완성 결과 -->
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('searchInput');
+            const suggestions = document.getElementById('suggestions');
+
+            input.addEventListener('input', async () => {
+                const query = input.value.trim();
+                if (!query) {
+                suggestions.style.display = 'none';
+                return;
+                }
+
+                try {
+                const res = await fetch(`/api/suggest?keyword=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                suggestions.innerHTML = '';
+                if (data.length === 0) {
+                    suggestions.style.display = 'none';
+                    return;
+                }
+
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    
+                    // 검색어 강조 처리
+                    const regex = new RegExp(`(${query})`, 'gi');  // 대소문자 무시
+                    const highlighted = item.replace(regex, '<strong>$1</strong>');
+
+                    li.innerHTML = highlighted;
+
+                    li.addEventListener('click', () => {
+                    input.value = item;
+                    suggestions.style.display = 'none';
+                    });
+                    suggestions.appendChild(li);
+                });
+
+                suggestions.style.display = 'block';
+                } catch (err) {
+                console.error('Error fetching suggestions:', err);
+                }
+            });
+
+            // 검색창 외부 클릭 시 자동완성 닫기
+            document.addEventListener('click', (e) => {
+                if (!document.getElementById('searchBar').contains(e.target)) {
+                suggestions.style.display = 'none';
+                }
+            });
+            });
+        </script>
+
+       <!-- 로그인한 후 -->
+       <% if (loggedIn) { %>
+        <div id="after-login">
+            <div id="mypage"><a href="/auth/mypage"><i class="fa-solid fa-circle-user"></i></a></div>
+            <a href="/write"><div id="write-post"><p>글쓰기</p></div></a>
+        </div>
+        <%} else {%>
+         <!-- 로그인하기 전 회원가입, 로그인 버튼 -->
+         <div id="before-login">
+            <div id="signUp"><a href="/auth/newuser">회원가입</a></div>
+            <div>&nbsp;|&nbsp;</div>
+            <div id="signIn"><a href="/auth/login">로그인</a></div>
+        </div>
+        <%} %>
+    </header>
+
+    <div class="flashes">
+        <% if(flashMessages) { %>
+            <% if (flashMessages.success) { %>
+                <div class ="flash success">
+                    <%= flashMessages.success %>
+                </div>
+            <% } else if (flashMessages.error) { %>
+                <div class="flash error">
+                    <%= flashMessages.error %>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+
+    <% if (showCategoryBar) { %>
+        <%- include('recipe/categoryBar.ejs') %>
+    <% } %>    
+
+    <section>
+    <%- body %>  <!-- 이곳에서 개별 페이지의 내용이 렌더링됩니다. -->
+    </section>
+
+    <footer><p>© 2024 YORIJORI</p></footer>
+
+</body>
+</html>

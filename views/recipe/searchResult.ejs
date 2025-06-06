@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    <link rel="stylesheet" href="/css/styles.css"> 
+    <link rel="stylesheet" href="/css/recipe/searchResult.css">
+    <script src="/js/recipe/searchResult.js"></script>
+    <title>Search Result</title>
+</head>
+<body>
+    <!-- 검색 결과 컨테이너 박스 -->
+    <div id="container">
+        <div id="side-bar">
+            <div class="funding-icon"></div><!--side-bar width 안먹어서 임의로 넣어놓음-->
+        </div>
+        
+        <div id="searchResult">
+        <% if (result_posts.length > 0) { %>
+            <h1 class="title">'<span id="title"><%= searchQuery %></span>' 검색 결과 '<span id="title"><%= filteredPosts.length %></span>'개의 레시피가 있습니다</h1>
+            <hr id="hr-top"> <!-- 수평선 -->
+            <!-- 정렬 순서 카테고리 -->
+            <div class="sort-by">
+                <div id="ver"></div>
+                <a href="?sort=latest&material=<%= searchQuery %>" class="sort-method" id="latest">최신순</a>
+                <div id="ver"></div>
+            </div>
+            <hr id="hr-bottom"> <!-- 수평선 -->
+
+            <div class="list-group">
+                <!-- 검색 결과 개수 만큼 post 보여줌(썸네일 사진, 제목, 주재료) -->
+                <% for (var i = 0; i< result_posts.length; i++){ %>                  
+                    <div class="recipe-card" data-post-id="<%=result_posts[i].postId%>">
+                        <img src="<%= result_posts[i].images.length > 0 ? result_posts[i].images[0].imageUrl : '/assets/image.png' %>" alt="<%= result_posts[i].title %> image" class="recipe-image">
+                        <div class="btn-position">
+                        <a href="/write/getWritedPage?postId=<%=result_posts[i].postId%>"> 
+                        <h2><%= result_posts[i].title %></h2>
+                        </a>
+                        <% if (loggedIn) { %>
+                            <button
+                            class="bookmark-button <%= savedPostIds.includes(result_posts[i].postId) ? 'bookmark-saved' : 'bookmark-not-saved' %>" 
+                            id="btn-<%= result_posts[i].postId %>" 
+                            onclick="saveBookmark('<%= result_posts[i].postId %>');">
+                            </button>
+                        <% } else { %>
+                            <button
+                            class="bookmark-button bookmark-not-saved" 
+                            id="btn-<%= result_posts[i].postId %>" 
+                            onclick="redirectToLogin();">
+                           </button>
+                        <% } %>
+                        </div>
+                        <p>주재료: <%= result_posts[i].ingredients %></p>
+                    </div>
+                <% } %>
+            </div>
+            <!--페이징 넘버-->
+            <div class="pagination">
+                <% for (let page = 1; page <= pageNum; page++) { %>
+                <a href="?sort=<%= sort %>&material=<%= searchQuery %>&page=<%= page %>" class="<%= currentPage === page ? 'active' : '' %>"><%= page %></a>
+                <% } %>
+            </div>
+        <% } else { %>
+            <div id="no-result">
+                <div class="img-box">
+                    <img src="/assets/image.png" class="no-result-img">
+                </div>
+                <div class="no-result-comment">
+                <h1 class="comment1">'<span id="title"><%= searchQuery %></span>'에 대한 검색 결과가 없습니다</h1>
+                <h3 class="comment2">정확한 단어로 다시 검색해주세요</h3>   
+                </div>                       
+            </div>
+        <% } %>
+    
+        </div>
+
+        <div id="side-bar">    
+            <div class="goto-funding">
+                <% if (loggedIn) { %>
+                <!-- 로그인한 사용자는 펀딩 페이지로 이동-->
+                <a href="/joinFundingPage/fundingPage">
+                <% } else { %>
+                <!-- 로그인하지 않은 사용자는 로그인 페이지로 이동-->
+                <a href="/auth/login"  onclick="redirectToLogin();">
+                <% } %>
+                <img src="/assets/image.png" class="funding-icon">
+                <p class="funding-txt">펀딩하러 가기</p>
+                </a>
+            </div>
+        </div>
+        
+    </div>
+
+    <input type="hidden" id="userId" value="<%= user ? user.userId : "" %>">
+
+   
+    <script>
+        function redirectToLogin() {
+            alert('로그인이 필요합니다.');
+            window.location.href = '/auth/login'; // 로그인 페이지 URL로 변경
+        }
+    </script>    
+    <script src="/js/recipe/bookmark.js"></script>
+
+    <script src="/js/recipe/view.js"></script>
+ 
+</body>
+</html>

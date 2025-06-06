@@ -1,0 +1,234 @@
+#container {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+}
+
+/* 검색 결과 */
+#searchResult {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 1090px;
+    margin-top:50px;
+}
+
+#no-result {
+    height: 470px;
+    width: 750px;
+    background-color: #CED7C5;
+    margin: auto;
+    margin-top: 90px;
+    border-radius: 70px;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.img-box {
+    background-color: #E3CAA5;
+    height: 200px;
+    width: 200px;
+    border-radius: 100%;
+    text-align: center;
+}
+
+.no-result-img {
+    height: 200px;
+    width: 200px;
+    background-color: transparent;
+}
+.no-result-comment{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin:30px 0 0 0;
+}
+.comment1, .comment2{
+    margin: 10px 0 0 0;
+}
+.title {
+    font-size: 25px;
+}
+
+#title {
+    color: #CEAB93;
+    font-size: 28px;
+}
+
+hr {
+    margin: 10px 0 10px 0;
+}
+
+#hr-top {
+    border: solid 2px rgb(65, 101, 88, 0.5);
+    width: 1090px;
+}
+
+#hr-bottom {
+    border: solid 1px rgb(65, 101, 88, 0.5);
+    width: 1090px;
+}
+
+/*검색 결과 정렬 방법*/
+#ver {
+    background-color: #6A6A6A;
+    height: 16px;
+    width: 1px;
+}
+
+.sort-by {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    float: left;
+    padding-right: 700px;
+    width: 350px;
+}
+
+.sort-by > div,
+.sort-by > a {
+    margin-right: 10px;
+}
+
+.sort-method {
+    font-weight: 200;
+    color: #6A6A6A;
+}
+
+.click {
+    color: black;
+    font-weight: bolder;
+}
+
+/*검색 결과 게시물*/
+.list-group {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3열 레이아웃 */
+    margin: 20px 0; /* Reduced margin to decrease spacing */
+    width: 1090px;
+    gap: 20px;
+    place-items: center;
+}
+
+.recipe-card {
+    position: relative;
+    color: #fff;    
+    background-color: rgba(185, 185, 185, 0.219);
+    box-shadow: 0px 0px 6px 2px rgba(0, 0, 0, 0.096);
+    border-radius: 10px;
+    padding: 15px;
+    overflow: hidden;
+    height: 310px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.recipe-image {
+    width: 300px;
+    height: 230px;
+    border-radius: 10px; /* 이미지 상단에 라운드 코너 */
+}
+.recipe-card h2, .recipe-card p{
+    margin: 0;
+    margin-top: 10px;
+    color: #242424;
+    width: 250px;
+}
+.btn-position{
+    display: flex;
+    justify-content: space-between;
+}
+.bookmark-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    margin-top:10px;
+    width: 32px;
+    height: 32px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.bookmark-saved {
+    background-image: url('/assets/bookmark2.png'); /* 저장된 이미지 경로 */
+    width: 24px; /* 저장된 이미지 크기 조정 */
+    height: 24px;
+}
+
+.bookmark-not-saved {
+    background-image: url('/assets/bookmark1.png'); /* 초기 이미지 경로 */
+}
+/* 페이지 넘버 */
+.pagination{
+    margin: 100px 0 50px 0;
+}
+
+.pagination a {
+    color: gray;
+    text-decoration: none;
+    padding: 5px;
+    border-radius: 5px;
+    transition: color 0.3s;
+}
+
+.pagination a.active {
+    color: black;
+    font-weight: bold;
+}
+
+/* 펀딩 아이콘 위치*/
+
+#side-bar {
+    width: 200px;
+    min-height: calc(100vh - 150px);
+}
+
+.goto-funding {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: sticky;
+    top: 750px;
+    padding-bottom: 30px;
+}
+
+.funding-icon {
+    width: 150px;
+}
+
+.funding-txt {
+    margin: 0;
+    text-align: center;
+}
+
+a {
+    color: black;
+}
+
+/* New class to control the spacing between the sections */
+.view-posts-container {
+    margin-bottom: 40px; /* Add margin bottom for spacing */
+}
+
+.recommend-posts-container {
+    margin-top: 20px; /* Add margin top for spacing */
+}
+
+.posts-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    width: 1090px;
+}
+
+.posts-section h1 {
+    width: 1090px; /* Match the width of the #searchResult */
+    text-align: left; /* Ensure the text is left-aligned */
+    margin-bottom: 20px; /* Space between the heading and posts */
+}
