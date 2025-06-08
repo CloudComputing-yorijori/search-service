@@ -2,20 +2,33 @@ const express = require('express');
 const axios = require('axios');
 const router = express.Router();
 const client = require('../services/elastic');
+const COMMUNITY_SERVICE_URL = process.env.COMMUNITY_SERVICE_URL;
+
 
 // 기존 검색 API
 router.get('/', async (req, res) => {
-  const { q } = req.query;
-  const result = await client.search({
-    index: 'posts',
-    query: {
-      multi_match: {
-        query: q,
-        fields: ['title^2', 'content']
+  const { material } = req.query;
+
+  if (!material) {
+    return res.status(400).json({ error: '검색어 (material)가 필요합니다.' });
+  }
+
+  try {
+    const result = await client.search({
+      index: 'posts',
+      query: {
+        multi_match: {
+          query: material,
+          fields: ['title^2', 'content']
+        }
       }
-    }
-  });
-  res.json(result.hits.hits);
+    });
+
+    res.json(result.hits.hits);
+  } catch (error) {
+    console.error('Search error:', error.message);
+    res.status(500).json({ error: '검색 실패' });
+  }
 });
 
 // 자동완성 API
@@ -47,7 +60,7 @@ router.get('/recommend/:userId', async (req, res) => {
 
   try {
     // 1. scrap-service에서 스크랩한 postId 목록 가져오기
-    const scrapResponse = await axios.get(`http://community-service:8081/api/saves/${userId}`);
+    const scrapResponse = await axios.get(`${COMMUNITY_SERVICE_URL}/community-api/saves/${userId}`);
     const scrapedPostIds = scrapResponse.data.map(post => post.postId);
 
     if (!scrapedPostIds || scrapedPostIds.length === 0) {
@@ -137,3 +150,4 @@ router.delete('/index/:postId', async (req, res) => {
     res.status(500).json({ error: 'Delete failed' });
   }
 });
+module.exports=router;

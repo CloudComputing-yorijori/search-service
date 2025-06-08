@@ -1,5 +1,7 @@
-const { Client } = require('@elastic/elasticsearch');
 require('dotenv').config();
+const { Client } = require('@elastic/elasticsearch');
+console.log("Cloud ID 확인:", process.env.CLOUD_ID);
+
 
 const client = new Client({
   cloud: {
